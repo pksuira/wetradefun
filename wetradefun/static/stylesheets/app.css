@@ -1,0 +1,89 @@
+/* -------------------------------------------------- 
+   Table of Contents
+-----------------------------------------------------
+:: Shared Styles
+:: Index
+*/
+
+
+/* -----------------------------------------
+   Shared Styles
+----------------------------------------- */
+body { 
+  background-image: url('/static/images/bg-body.jpg');
+}
+
+#container {
+   min-height:100%;
+   position:relative;
+}
+#footer {
+   position:absolute;
+   margin: auto;
+   bottom:0;
+   width:100%;
+   height: 60px;
+}
+#body {
+  padding-bottom:60px;   /* Height of the footer */
+}
+
+.search {
+  padding-top: 10px;
+}
+/* -----------------------------------------
+   Index
+----------------------------------------- */
+.hoverwithtext {
+/*    width: 100px;
+    height: 50px;*/
+    line-height: 0px;
+    color: transparent;
+    font-size: 12px;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+       font-weight: 30;
+    text-transform: uppercase;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+}
+ 
+.hoverwithtext:hover {
+    line-height: 50px;
+    color: #2BA6CB;
+}
+ 
+.hoverwithtext img{
+    float: down;
+    margin: 15 15px;
+}
+
+.miniature-result{
+    max-height: 90px;
+
+}
+
+#copies {
+  padding-top: 7px;
+}
+
+#li_copies {
+  border-bottom: solid 1px #ddd;
+}
+
+img.miniature-management{
+  max-height: 200px;
+}
+
+#home-box{
+  margin-bottom:20px;
+}
+
+#listed {
+  border-right: solid 1px #ddd;
+}
+
+
+img.miniature-homepage{
+  max-height: 250px;
+}

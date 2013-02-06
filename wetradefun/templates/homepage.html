@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block preload_js %}
+  
+<script type='text/javascript'>
+   $(document).ready(function() {
+       $('#featuredContent').orbit({ 
+        animation: 'horizontal-push',
+        fluid: '16x6' });
+       $('#featuredContent').show();
+   });
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="panel callout radius twelve columns centered" id="home-box">
+  <h2 style="text-align:center">Welcome to We Trade Fun</h2>
+  <div class="row">
+    <div class="four columns centered"><img src= "/static/images/logo.png"/>
+      </div>  </div>
+      <br/>
+  <div class="row">
+    {%if user.is_authenticated%}
+    <a class="four offset-by-two large radius button" href="/users/account_management">View Your Account</a>
+    <a class="four large radius button" href="/how_to_use">How To Get Started</a>
+    {%else%}
+    <a class="two offset-by-four radius button" href="/users/sign_in?next={{request.path}}">Sign in &raquo;</a>
+    <a class="two radius button" href="/users/sign_up">Sign up &raquo;</a>
+    {%endif%}
+  </div>
+</div>
+<div id="featuredContent" class="twelve" style="display:none;">
+  <div class="panel">
+    <h3>Most Wishlisted Games</h3>
+      <div class="twelve columns">
+        <ul class="block-grid four-up">
+          {% for game in most_wishlisted_games %}
+          <li><a href="/trades/game/{{game.giant_bomb_id}}" class='th hoverwithtext'><img class="miniature-homepage" src="{{game.image_url}}"/><p>See Details {%ifnotequal game.num_of_listing 0L%}- {{game.num_of_listing}}{% endifnotequal %}</p></a></li>
+          {% endfor %}
+        </ul>
+      </div>
+  </div>
+  </br></br>
+  <div class="panel">
+    <h3>What's Available Right Now?</h3>
+      <div class="twelve columns">
+        <ul class="block-grid four-up">
+        {% for game in most_listed_games %}
+          <li><a href="/trades/game/{{game.giant_bomb_id}}" class='th hoverwithtext'><img class="miniature-homepage" src="{{game.image_url}}"/><p>See Details {%ifnotequal game.num_of_listing 0L%}- {{game.num_of_listing}}{% endifnotequal %}</p></a></li>
+        {% endfor %}
+      </ul>
+     </div>
+  </div>
+  </br></br>
+  <div class="panel">
+    <h3>Most Traded Games</h3>
+      <div class="twelve columns">
+        <ul class="block-grid four-up">
+        {% for game in most_traded_games %}
+        <li><a href="/trades/game/{{game.giant_bomb_id}}" class='th hoverwithtext'><img class="miniature-homepage" src="{{game.image_url}}"/><p>See Details {%ifnotequal game.num_of_listing 0L%}- {{game.num_of_listing}} listings avaiable{% endifnotequal %}</p></a></li>
+        {% endfor %}
+      </ul>
+     </div>
+  </div>
+</div>
+       
+{% endblock %}

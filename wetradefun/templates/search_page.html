@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Result{% endblock %}
+
+{% block content %}
+
+
+<ul class="no-bullet" text-align = "centered">
+<li class="cta-button" text-align = "centered"> 
+{% if previous != -1 %}
+<a href="/trades/search/?term={{query}}&offset={{previous}}" class="tiny radius button" >Previous</a>
+{% endif %}
+{% if next != -1 %}
+<a href="/trades/search/?term={{query}}&offset={{next}}" class="tiny radius button" >Next</a>
+{% endif %}
+</li>
+</ul>
+<table class="twelve">
+        <thead>
+          <tr>
+            <th>Cover</th>
+            <th>Name</th>
+            <th>Games Listed</th>
+            <th>Short Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+          {% for game in results %}
+
+            <tr>
+              <td><a href="/trades/game/{{game.id}}" class='th'><img class="miniature-result" src="{{game.image}}"></a></td>
+              <td><a href="/trades/game/{{game.id}}">{{game.name}}</a></td>
+              <td>{{game.number_of_listing}}</td>
+              <td>{{game.deck}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+<ul class="no-bullet">
+<li class="cta-button"> 
+{% if previous != -1 %}
+<a href="/trades/search/?term={{query}}&offset={{previous}}" class="tiny radius button" >Previous</a>
+{% endif %}
+{% if next != -1 %}
+<a href="/trades/search/?term={{query}}&offset={{next}}" class="tiny radius button" >Next</a>
+{% endif %}
+</li>
+</ul>
+
+
+
+
+{% endblock %}

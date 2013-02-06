@@ -1,0 +1,442 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Management{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="/static/stylesheets/fc-webicons.css">
+{% endblock %}
+{% block content %}
+{%load filters%}
+<div class="row">
+  <div class="twelve columns panel">
+    <h3>Dashboard</h3>
+
+    <dl class="tabs contained">
+      <dd class="hide-for-small"><a href="#myInformation">My Information</a></dd>
+      <dd class="active"><a href="#currentListings">Current Listings</a></dd>
+      <dd class="hide-for-small"><a href="#currentOffers">Current Offers</a></dd>
+      <dd class="hide-for-small"><a href="#tradeHistory">Trade History</a></dd>
+      <dd class="hide-for-small"><a href="#viewWishlist">View Wishlist</a></dd>
+    </dl>
+    <ul class="tabs-content">
+      <li id="myInformationTab">
+        <table class="twelve columns">
+          <tbody>
+             <tr>
+              <td>My Rating</td>
+              {% if userprofiler.rating == 0 %}
+              <td>Unrated</td>
+              {% else %}
+              <td>{{userprofiler.rating|floatformat:2}}</td>
+              {% endif %}
+            </tr>
+            <tr>
+              <td>{{user.email}}</td>
+              <td><a href="#" data-reveal-id="edit_email">Edit Email</a></td>
+            </tr>
+            <tr>
+              <td>********</td>
+              <td><a href="#" data-reveal-id="edit_password">Edit Password</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </li>
+      <li class="active" id="currentListingsTab">
+        <table class="twelve columns">
+          <thead>
+            <tr>
+              <th>My Listings</th>
+              <th>Information</th>
+              <th>Current Offers</th>
+            </tr> 
+          </thead>
+        <!--   ddd -->
+          <tbody>
+            {% for key, value in listing_dict.items %}
+            <tr>              
+              <td>
+                  <a href="/trades/game/{{key.game_listed.giant_bomb_id}}"><img class="miniature-management" src="{{key.game_listed.image_url}}"/><br /></a>
+              </td>
+              <td>
+                <ul class="no-bullet">
+                  <li><a href="/trades/game/{{key.game_listed.giant_bomb_id}}">{{key.game_listed.name}}</a></li>
+                  <li>Platform: {{key.game_listed.platform}}</li>
+                  <li>Posted: {{key.datePosted}}</li>
+                  <li>Share: <a target="_blank" class="fc-webicon facebook small" href="https://www.facebook.com/dialog/feed?app_id=381605281928154&link=http://wetradefun.appspot.com/trades/game/{{key.game_listed.giant_bomb_id}}&picture={{key.game_listed.image_url}}&name={{key.game_listed.name}}&description=Trade%20Your%20Games%20In%20WeTradeFun&redirect_uri=http://wetradefun.appspot.com/trades/game/{{key.game_listed.giant_bomb_id}}&t={{key.game_listed.name}}">Share on Facebook</a> <a target="_blank" class="fc-webicon twitter small" href="http://twitter.com/home?status=I%20have%20{{key.game_listed.name}}%20listed%20in%20WeTradeFun- http://wetradefun.appspot.com/trades/game/{{key.game_listed.giant_bomb_id}}">Share on Twitter</a></li>
+                </br>
+                  <a href="#currentListings" onclick="get_request_removelisting({{key.id}})" class="small alert button">Remove Listing</a>
+                  
+                </ul>
+              </td>
+              <td>
+                <ul class="no-bullet">
+                  <li><!-- list item for every offer-->
+                    <ul class="no-bullet">
+                      {%if accepted_offer_dict|lookup:key%}
+                      <li>
+                        <a href="/trades/game/{{accepted_offer_dict|lookup_game_id:key}}"><img class="miniature-management" src="{{accepted_offer_dict|lookup_game_image:key}}" /></a>
+                      </li>
+                      {%else%}
+                      {% for offer in value %}
+                        {% ifequal offer.status 'offered'%}
+                      <li>
+                        <a href="/trades/game/{{offer.sender_game.giant_bomb_id}}">{{offer.sender_game.name}}</a>
+                      </li>
+                      <li>
+                        Platform: {{offer.sender_game.platform}}
+                        {{accepted_offer_dict.key}}
+                      </li>
+                      <li><b>Offer Comment:</b><br>{{offer.sender_message}}</li>
+                      <label for="response_comment">Comments:</label>
+                      <input type="text" id="accept_comment" placeholder="Respond to the offer"/>
+                      <li class="button-bar">
+                        <ul class="button-group">
+                          <li>
+                            <a href="#currentListings" onclick="get_request_acceptoffer({{offer.pk}})"  class="small button">Accept Offer</a>
+                          </li>
+                          <li>
+                            <a href="#currentListings" onclick="get_request_declineoffer({{offer.pk}})" class="small alert button">Decline Offer</a>
+                          </li>                          
+                        </ul>
+                      </li>
+                      <li>
+                        <!-- The message should go here -->
+                      </li>
+                      <hr>
+                        {% endifequal %}
+                      {% endfor %}
+                      {%endif%}
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </li>
+      <li id="currentOffersTab">
+        <table class="twelve columns">
+          <thead>
+            <tr>
+              <th>Listing</th>
+              <th>My Offer</th>
+              <th>Date Offered</th>
+              <th>Status</th>
+            </tr>              
+          </thead>
+          <tbody>
+            {% for offer in current_offers %}
+            <tr>
+              <td>
+                <a href="/trades/game/{{offer.current_listing.game_listed.giant_bomb_id}}"><img class="miniature-management" src="{{offer.current_listing.game_listed.image_url}}"/></a></td>
+              <td><a href="/trades/game/{{offer.sender_game.giant_bomb_id}}"><img class="miniature-management" src="{{offer.sender_game.image_url}}" /></a></td>
+              <td>{{offer.dateRequested}}</td>
+
+              <td>
+                <ul class="no-bullet">
+                  <li>
+                    {% ifequal offer.status 'accepted' %}
+                      <b><font color="green">ACCEPTED</font></b></br>Confirm the trade below.
+                    {% endifequal %}
+                    {% ifequal offer.status 'offered' %}
+                      <b><font color="black">OFFERED</font></b></br>Please wait for a reply.
+                    {% endifequal %}
+                    {% ifequal offer.status 'deferred' %}
+                      <b><font color="orange">DEFERRED</font></b></br>The lister has accepted another offer.</br>(will be re-offered if the trade fails)
+                    {% endifequal %}
+                  </li>
+
+                </br>         
+                  <li id="offer_message"><b>Response:</b><br>{{offer.receiver_message}}</li>
+                  <li class="button-bar">
+                    <ul class="button-group">
+                      <li>
+                        {% ifequal offer.status 'accepted' %}
+                        <a href="#currentOffers" onclick="get_request_confirmoffer({{offer.pk}})" class="small button">Confirm Trade</a>
+                        {% endifequal %}
+                      </li>
+                      <li>
+                        <a href="#currentOffers" onclick="get_request_deleteoffer({{offer.pk}})" class="small alert button">Cancel Trade</a>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </li>
+      <li id="tradeHistoryTab">
+        <table class="twelve columns">
+          <thead>
+            <tr>
+              <th>Game Listed</th>
+              <th>Game Offered</th>
+              <th>Date Completed</th>
+              <th>User Contact</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in history %}
+            <tr>
+              <td><a href="/trades/game/{{transaction.current_listing.game_listed.giant_bomb_id}}"><img class="miniature-management" src="{{transaction.current_listing.game_listed.image_url}}" /></a><br><b>Response:</b><br>{{transaction.receiver_message}}</td>
+              <td><a href= "/trades/game/{{transaction.sender_game.giant_bomb_id}}"><img class="miniature-management" src="{{transaction.sender_game.image_url}}" /></a><br><b>Offer Comment:</b><br>{{transaction.sender_message}}</td>
+              <td>{{transaction.dateTraded}}</td>
+              <td>
+                <ul class="no-bullet">
+                  <li>
+                      {% if user == transaction.sender.user %}
+                        {{transaction.current_listing.user.user.username}}</br>
+                        {{transaction.current_listing.user.user.email}}
+                      {% else %}
+                        {{transaction.sender.user.username}}</br>
+                        {{transaction.sender.user.email}}
+                      {% endif %}
+                  </li>
+                  
+                    <li class="button-bar">
+                      <ul class="button-group">
+                        {% if user == transaction.sender.user and transaction.receiver_has_been_rated or user == transaction.current_listing.user.user and transaction.sender_has_been_rated %}
+                          <li class="small button">Already Rated
+                          </li>
+                        {% else %}
+                          <li class="small dropdown button">
+                            Rate User
+                            <ul>
+                              <li><a href="#" onclick="get_request_rateuser(5, {{transaction.pk}})">5: Excellent</a></li>
+                              <li><a href="#" onclick="get_request_rateuser(4, {{transaction.pk}})">4: Good</a></li>
+                              <li><a href="#" onclick="get_request_rateuser(3, {{transaction.pk}})">3: Acceptable</a></li>
+                              <li><a href="#" onclick="get_request_rateuser(2, {{transaction.pk}})">2: Poor</a></li>
+                              <li><a href="#" onclick="get_request_rateuser(1, {{transaction.pk}})">1: Criminal</a></li>
+                            </ul>
+                          </li>
+                        {% endif %}
+
+                        <li><a href="#" class="small alert button" onclick="report_user()">Report User</a></li>
+                      </ul>
+                    </li>
+                    
+                </ul>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </li>
+      <li id="viewWishlistTab">
+        <table class="eight columns">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Title</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in wishlist %}
+            <tr id="wishlist_item">
+              <td><a href= "/trades/game/{{item.wishlist_game.giant_bomb_id}}"><img class="miniature-management" src="{{item.wishlist_game.image_url}}" /></a></td>
+              <td><p>{{item.wishlist_game.name}}</td>
+              <td>
+                <a href="#viewWishlist" class="small button" onclick ="get_request_removefromwishlist({{item.wishlist_game.giant_bomb_id}})">Remove Item</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <form class="search four columns">
+          <input type="text" id="searchgame_game_name" placeholder="Add a game to your wishlist..." onkeyup="get_request_searchgame()">
+          <input type="hidden" id="searchgame_game_id"/>
+        </form>
+      </li>
+    </ul>
+  </div>
+</div>
+
+  <div id="edit_email" class="reveal-modal medium">
+    <h2>What would you like to change it to?</h2>
+    <div class="ui-widget">
+      <input type="text" id="old_email" placeholder="Old Email"/>
+      <input type="text" id="new_email" placeholder="New Email"/>
+      <input type="text" id="confirm_email" placeholder="Confirm Email"/>
+      <a class="button" href="#" onclick="edit_email()">Submit</a>
+    </div>
+  </div>
+
+  <div id="edit_password" class="reveal-modal medium">
+    <h2>What would you like to change it to?</h2>
+    <div class="ui-widget">
+      <input type="password" id="old_password" placeholder="Old Password"/>
+      <input type="password" id="new_password" placeholder="New Password"/>
+      <input type="password" id="confirm_password" placeholder="Confirm Password"/>
+      <a class="button" href="#" onclick="edit_password()">Submit</a>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+function get_request_removefromwishlist(wishlist_game_id){
+  $.get(
+    "/trades/remove_from_wish_list/", 
+    {game_id: wishlist_game_id},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+function edit_email(){
+  $.get(
+    "/users/edit_email/", 
+    {oemail: $('#old_email').val(),
+    nemail: $('#new_email').val(), 
+    cemail: $('#confirm_email').val()},
+
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+
+}
+function edit_password(){
+  $.get(
+    "/users/edit_password/", 
+    {opassword: $('#old_password').val(), 
+    npassword: $('#new_password').val(), 
+    cpassword: $('#confirm_password').val()},
+
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_removelisting(listing_primary_id){
+  $.get(
+    "/trades/remove_listing/", 
+    {listing_id: listing_primary_id},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+} 
+
+function get_request_acceptoffer(transaction_primary_id){
+  $.get(
+    "/trades/accept_offer/", 
+    {transaction_id: transaction_primary_id,
+    accept_comment : $('#accept_comment').val()},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_confirmoffer(transaction_primary_id){
+  $.get(
+    "/trades/confirm_offer/", 
+    {transaction_id: transaction_primary_id},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_declineoffer(transaction_primary_id){
+  $.get(
+    "/trades/decline_offer/", 
+    {transaction_id: transaction_primary_id},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_deleteoffer(transaction_primary_id){
+  $.get(
+    "/trades/delete_offer/", 
+    {transaction_id: transaction_primary_id},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_rateuser(rating, transaction_primary_id){
+  $.get(
+    "/trades/rate_user/", 
+    {desired_rating: rating,
+    transaction_id: transaction_primary_id},
+    function(data){
+      console.log(data);
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_searchgame(){
+    $("#searchgame_game_name").autocomplete({
+      source: "/trades/get_request/",
+      select: function (event, ui) {
+        $("#searchgame_game_id").val(ui.item.id);
+        get_request_wishlist();
+        return ui;
+  }});
+}
+
+function get_request_wishlist(){
+  console.log($('#searchgame_game_id').val());
+  console.log('hello');
+  $.get(
+    "/trades/add_to_wish_list/",
+  {
+    game_id : $('#searchgame_game_id').val()
+  },
+  function(data){
+      console.log();
+      location.reload();
+    }
+  );
+    return false;
+}
+
+
+</script>
+{% endblock %}
+  <!-- End Main Content and Sidebar -->
+
+<!-- Included JS Files (Compressed) -->
+<script src="javascripts/jquery.js"></script>
+<script src="javascripts/foundation.min.js"></script>
+
+<!-- Initialize JS Plugins -->
+<script src="javascripts/app.js"></script>
+
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+  g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+  s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+</body>
+</html>

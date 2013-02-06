@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+
+<div class="seven columns centered panel">
+  <form action="" method="post">
+    <h3>Create an account</h3>
+
+    <div class="row collapse fieldWrapper">
+      {{ form.username.errors }}
+      <div class="three columns">
+        <label for="id_username">Username</label>
+      </div>
+      <div class="nine columns">
+        {{ form.username }}
+      </div>            
+    </div>
+    <div class="row collapse fieldWrapper">
+      {{ form.email.errors }}
+      <div class="three columns">
+        <label for="id_email">Email</label>
+      </div>
+      <div class="nine columns">
+        {{ form.email }}
+      </div>            
+    </div>
+    <div class="row collapse fieldWrapper">
+      {{ form.password.errors }}
+      <div class="three columns">
+        <label for="id_password">Password</label>
+      </div>
+      <div class="nine columns">
+        {{ form.password }}
+      </div>            
+    </div>
+
+    <div class="row collapse fieldWrapper">
+      {{ form.check_password.errors }}
+      <div class="three columns">
+        <label for="id_check_password">Repeat Password</label>
+      </div>
+      <div class="nine columns">
+        {{ form.check_password }}
+      </div>            
+    </div>
+
+    <button type="submit" class="radius button">Submit</button>
+    <div class="right">
+    <a href="/users/sign_in">Already have an account?</a><br/>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

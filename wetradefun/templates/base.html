@@ -1,0 +1,224 @@
+<!DOCTYPE html 
+ PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
+lang="{% firstof LANGUAGE_CODE 'en' %}">
+<head>
+  <meta property="og:title" content="We Trade Fun" />
+  <meta property="og:type" content="non_profit" />
+  <meta property="og:url" content="http://wetradefun.appspot.com" />
+  <meta property="og:image" content="http://wetradefun.appspot.com/static/images/logo.png" />
+  <meta property="og:site_name" content="We Trade Fun" />
+  <meta property="fb:admins" content="1230654221" />
+  <meta charset="utf-8" />
+
+  <!-- Set the viewport width to device width for mobile -->
+  <meta name="viewport" content="width=device-width" />
+
+  <title>{% block title %}{% endblock %} We Trade Fun</title>
+
+  <!-- Included CSS Files (Compressed) -->
+  <link rel="stylesheet" href="/static/stylesheets/foundation.min.css">
+  <link rel="stylesheet" href="/static/stylesheets/app.css">
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+  {% block css %}
+  {% endblock %}
+  
+  <script src="/static/javascripts/modernizr.foundation.js"></script>
+ 
+  <!-- Included JS Files (Compressed) -->
+  <script src="/static/javascripts/jquery.js"></script>
+  <script src="/static/javascripts/foundation.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+  <script src="/static/javascripts/jquery.foundation.forms.js"></script>
+
+  {% block preload_js %}
+  {% endblock %}
+
+  {% block extra-head %}{% endblock %}
+</head>
+
+<body>
+  <div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=381605281928154";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+  <div class="container"><!-- Top Bar -->
+    <nav class="top-bar" id="header">
+      <ul>
+        <!-- Title Area -->
+        <li class="name">
+          <h1>
+            <a href="/">
+              We Trade Fun
+            </a>
+          </h1>
+        </li>
+        <li class="toggle-topbar"><a href="#"></a></li>
+      </ul>
+    
+      <section>
+        <ul class="left">
+          <li>
+            <a>Recycling Old Games Since 2012</a>
+          </li>
+            
+          
+          <li class="search">
+            <div class="ui-widget">
+              <form class="search" action="/trades/search" method="GET">
+                <input type="text" id="searchgame_game_name_bar" placeholder="Search for a game..." name="term" onkeyup="get_request_searchgame_bar()">
+                <input type="hidden" name="offset" value="0" /> 
+              </form>
+            </div>
+          </li>
+        </ul>
+            
+            
+        <ul class = "right">
+          <li class="divider"></li>
+          <li class="has-dropdown">
+            {%if user.is_authenticated%}
+            <a href="/users/account_management.html">{{user.username}}</a>
+            <ul class="dropdown">
+              <li><a href="/users/account_management.html">Dashboard</a></li>
+              <li class="divider"></li>
+              <li><a href="/users/sign_out">Logout</a></li>
+            {%else%}
+            <a href="/users/sign_in?next={{request.path}}">Login</a>
+            <ul class="dropdown">
+              <li><a href="/users/sign_up">Create Account</a></li>
+            </ul>
+            {%endif%}
+        </ul>
+      </section>
+    
+    </nav>
+    <!-- End Top Bar -->
+    
+    <div class="row" id="body">
+      <div id="content">
+        {% block content-header %}
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        {% if info %}<div class="info">{{ info }}</div>{% endif %}
+        {% if messages %}
+        {% for message in messages %}
+          <div class="alert-box {% if message.level == 40 %}alert{% endif %}">
+            {{ message }}
+            <a href="" class="close">&times;</a>
+          </div>
+        {% endfor %}
+        {% endif %}
+        {% endblock %}
+    
+      {% block content %}{% endblock %}
+      </div>
+    </div>
+    <div class="push"></div>
+    <!-- Footer -->
+    <hr />
+    <div id="footer">
+      
+      <div class="row">
+        <div class="left four columns">
+          <p>We Trade Fun © 2012 WTF, inc.</p>
+          <ul class="inline-list">
+            <li><div class="fb-like" data-href="http://wetradefun.appspot.com" data-send="false" data-layout="button_count" data-width="450" data-show-faces="true" data-font="verdana"></div></li>
+            <li><a href="https://twitter.com/WeTradeFun" class="twitter-follow-button" data-show-count="false">Follow @WeTradeFun</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></li>
+          </ul>
+        </div>
+
+
+        <div class="right four columns">
+          <ul class="inline-list right">            
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact_us">Contact Us</a></li>
+            <li><a href="/how_to_use">Help</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+
+         <div class="four columns centered"><img src= "/static/images/logo.png" width="200" height="120" /></div>
+    </div>
+    
+    <!-- End Footer -->
+  </div>
+
+
+
+  <!-- Included JS Files (Uncompressed) -->
+  <!--
+  
+  <script src="static/javascripts/jquery.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.mediaQueryToggle.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.forms.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.reveal.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.orbit.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.navigation.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.buttons.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.tabs.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.tooltips.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.accordion.js"></script>
+  
+  <script src="static/javascripts/jquery.placeholder.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.alerts.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.topbar.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.joyride.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.clearing.js"></script>
+  
+  <script src="static/javascripts/jquery.foundation.magellan.js"></script>
+  
+-->
+
+
+
+<!-- Initialize JS Plugins -->
+<script src="/static/javascripts/app.js"></script>
+
+<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+<script>
+var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+  g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+  s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+<script>
+function get_request_searchgame_bar(){
+    $("#searchgame_game_name_bar").autocomplete({
+      source: "/trades/get_request/",
+      select: function (event, ui) {
+        $("#searchgame_game_id").val(ui.item.id);
+        location.href = "/trades/game/" + ui.item.id;
+        return ui;
+            }});
+          
+    }
+      
+
+</script>
+{% block js %}
+{% endblock %}
+</body>
+</html>

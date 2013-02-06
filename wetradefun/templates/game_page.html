@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}{{game.name}}{% endblock %}
+
+{% block content %}
+    <div class="row">
+      <div class="five columns">
+          <div class="th">
+            <img src="{{game.image}}"></a>
+          </div>
+      </div>
+      
+      <div class="seven columns">
+        <ul class="pricing-table">
+          <li class="title"><h3>{{game.name}}</h3>
+          </li>
+          {% for k,v in listings.items %}
+            <li class="price twelve columns" id="li_copies">
+              <div class="nine left" id="copies">{{v}} {{k}} cop{{ v|pluralize:"y,ies" }} avaliable</div>
+              <div class="three right">
+                  <a data-platform="{{k}}" class="make_offer_button small button left twelve"{% if user.is_authenticated %}href="#"  data-reveal-id="new_offer_confirmation"{% else %} href="/users/sign_in?next={{request.path}}" {% endif %}>Make an offer</a>
+                
+              </div>
+            </li>
+          {% empty %}
+            <li class="price">There are no copies available</li>
+          {% endfor %}
+          <li class="description">{{game.deck}}</li>          
+          <li class="bullet-item">Platform(s): {%for platform in game.platforms%} {{platform}}{% if forloop.last %}{% else %}, {% endif %}  {%endfor%}</li>
+          <li class="bullet-item">Genres: {%for genre in game.genres%} {{genre}}{% if forloop.last %}{% else %}, {% endif %}{%endfor%}</li>
+          <li class="bullet-item"><a class="secondary button" target="_new" href={{game.site_detail_url}}>See it on GiantBomb.com &raquo;</a>
+
+          </li>
+
+          <li class="cta-button"> 
+            <div class="button-bar centered">
+              <a class="radius button right" {% if user.is_authenticated %} href="#" data-reveal-id="new_listing_confirmation"{% else %} href="/users/sign_in" {% endif %}>Publish a listing</a>
+              {% if in_wishlist %}
+                <a class="radius success button left" id="wishlist" href="#" onclick="get_request_removefromwishlist()">In Wishlist</a>
+              {% else %}                  
+                <a class="radius button left" id="wishlist" {% if user.is_authenticated %}href="#" onclick="get_request_addtowishlist()" {% else %} href="/users/sign_in?next={{request.path}}" {% endif %}>+ Wishlist</a>
+              {% endif %}
+            </div>
+            
+          </li>
+        </ul>
+
+
+      </div>
+
+    </div>
+
+    <div id="new_listing_confirmation" class="reveal-modal medium">
+      <h2>Publish listing for <br>{{game.name}}?</h2>
+        <form class="custom"><label for="customDropdown">Select Platform</label>
+          <select style="display:none;" id="customDropdown">
+            {% for platform in game.platforms %}
+            {% if forloop.first %}
+            <option selected>{{platform}}</option>
+            {% else %}
+            <option>{{platform}}</option>
+            {% endif %}
+            {% endfor %}
+          </select>
+          <div class="custom dropdown" style="width: 186px;">
+            <a href="#" class="current" id="plat">{{game.platforms.0}}</a>
+            <a href="#" class="selector"></a>
+            <ul style="width: 184px;">
+              {% for platform in game.platforms %}
+              {% if forloop.first %}
+              <li class="selected">{{platform}}</li>
+              {% else %}
+              <li>{{platform}}</li>
+              {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        </form>
+      <a class="button" href="#" onclick="get_request_publishListing()">Post</a>
+      <a class="alert button" href="#" onclick="$('#new_listing_confirmation').trigger('reveal:close')">Cancel</a>
+      <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+
+    <div id="new_offer_confirmation" class="reveal-modal medium">
+      <div class="row">
+        <div class="six columns" id="listed">
+          <h5>You are making an offer on this game:</h5>
+          <div class="twelve columns">
+            <ul>
+              <li>
+                <strong>Name: </strong>{{game.name}}
+              </li>
+              <li>
+                <strong>Platform: </strong><span id="platform"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="six columns" id="offered">
+          <h5>Which game would you like to offer?</h5>
+          <label for="searchgame_game_name">Game Name: </label>
+          <input type="text" id="searchgame_game_name" placeholder="Enter a game name..." onkeyup="get_request_searchgame()"/> 
+          <input type="hidden" id="searchgame_game_id"/>
+          <label for="searchgame_comment">Comments:</label>
+          <input type="text" id="searchgame_comment" placeholder="The quality of this game is..."/>
+          <form id="offer_platform" class="custom">
+
+          </form>
+        </div>
+      </div>
+      
+
+      <div id="search_game_result"></div>
+      <a class="button" id="accept-trade-button" href="#" onclick="get_request_makeOffer()">Accept</a>
+
+      <a class="alert button" href="#" onclick="$('#new_offer_confirmation').trigger('reveal:close')">Cancel</a>
+      <a class="close-reveal-modal">&#215;</a>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+$(document).ready(function(){
+   $(".make_offer_button").click(function(){
+    var plat = $(this).data('platform');
+    console.log(plat);
+    $('#platform').text(plat);
+    $('#offer_platform').hide();
+   });
+});
+
+function get_request_addtowishlist(){
+  $.get(
+    "/trades/add_to_wish_list/", 
+    {
+      game_id: {{ game.id }}
+    }, 
+    function(data){
+      console.log(data);
+      $('#wishlist').replaceWith('<a class="radius success button left" id="wishlist" href="#" onclick="get_request_removefromwishlist()">In Wishlist</a>');
+    }
+  );
+  return false;
+} 
+
+function get_request_removefromwishlist(){
+  $.get(
+    "/trades/remove_from_wish_list/", 
+    {
+      game_id: {{ game.id }}
+    }, 
+    function(data){
+      console.log(data);
+      $('#wishlist').replaceWith('<a class="radius button left" id="wishlist" href="#" onclick="get_request_addtowishlist()">+ Wishlist</a>');
+    }
+  );
+  return false;
+} 
+
+function get_request_publishListing(){
+  $.get(
+    "/trades/add_listing/", 
+    {
+    platform : $('#plat').text(),
+    game_id : {{game.id}}
+    
+    }, 
+    function(data){
+      console.log(data);
+      $('#new_listing_confirmation').trigger('reveal:close');
+      location.reload();
+    }
+  );
+  return false;
+
+
+} 
+
+function get_request_makeOffer(){
+  console.log($('#searchgame_game_id').val());
+  console.log($('#searchgame_comment').val());
+  $.get(
+    "/trades/make_offer/", 
+    {
+    game1_id : $('#searchgame_game_id').val(),
+    game2_id : {{ game.id }},
+    r_platform: $('#platform').text(),
+    s_platform: $('input[name=platform]:checked', '#offer_platform').val(),
+    offer_comment : $('#searchgame_comment').val()
+    }, 
+    function(data){
+      console.log(data);
+      $('#new_offer_confirmation').trigger('reveal:close');
+      location.reload();
+    }
+  );
+  return false;
+}
+
+function get_request_searchgame(){
+    $("#searchgame_game_name").autocomplete({
+      source: "/trades/get_request/",
+      select: function (event, ui) {
+        $("#searchgame_game_id").val(ui.item.id);
+        get_request_platform();
+      }
+    });
+}
+
+function get_request_platform(){
+  $.get(
+    "/trades/get_platform/"+$('#searchgame_game_id').val(),
+    {
+    }, 
+    function(data){
+      $('#offer_platform').empty();
+      var response = JSON.parse(data);
+      console.log(typeof(response));
+      for (var key in response) {
+        if (response.hasOwnProperty(key)) {
+          console.log(response[key]);
+          $('<input type="radio" name="platform" value="'+response[key]+'"> '+response[key]+'<br>').appendTo('#offer_platform');
+        }        
+      }
+      console.log(response[0]);
+      $('#offer_platform').fadeIn();
+    }
+  );
+}
+
+
+
+function searchgame_game_name_keyup(){
+    delay(get_request_searchgame, 300);
+}
+
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Game Search Form</title>
+<script type = "text/javascript" src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>
+var delay = (function(){
+	var timer = 0;
+	return function(callback, ms){
+		clearTimeout (timer);
+		timer = setTimeout(callback, ms);
+	};
+})();
+function get_request(){
+    $.get(
+		"/trades/get_request/", 
+		{q :$("#input").val()}, 
+		function(data){
+			$("#div2").text(data);
+		}
+	);
+}
+function get_request2(){
+    $.get(
+		"/trades/make_offer/", 
+		{user_id :$("#user_id").val(), game1_id :$("#game1_id").val(), game2_id :$("#game2_id").val()}, 
+		function(data){
+			$("#div2").text(data);
+		}
+	);
+}
+function submit_method(){
+    get_request();
+	return false;
+}
+function submit_method2(){
+    get_request2();
+	return false;
+}
+function keyup_method(){
+    delay(get_request, 300);
+}
+</script>
+</head>
+<body>
+<h2>Game Search Form</h2>
+<p>GET requests can be seen by using Firebug with Chrome or Firefox.</p>
+<p>
+Three ways to search a game name:<br/>
+1. Press search button<br/>
+2. Press enter<br/>
+3. Key in and wait<br/>
+</p>
+<form onsubmit="return submit_method();" id="form">
+    Game Name: <input type="text" id="input" value="call of duty" onkeyup="keyup_method();">
+    <input type="submit" value="Search">
+</form>
+<form onsubmit="return submit_method2();" id="form2">
+    My User ID: <input type="text" id="user_id">
+	My Game ID: <input type="text" id="game1_id">
+    Target Game ID: <input type="text" id="game2_id">
+    <input type="submit" value="Trade">
+</form>
+<p>==========</p>
+<p><div id="div2"></div></p>
+<p>==========</p>
+</body>
+</html>
+
+	

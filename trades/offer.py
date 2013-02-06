@@ -1,0 +1,1 @@
+from models import *# still working on thisdef addCurrentlist(user_id,gianBomb_id)    userprofile=UserProfile.objects.get(id=user_id)    list=Currentlist(sender=userprofile,gianBombID=gianBomb_id)
