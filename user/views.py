@@ -15,7 +15,7 @@ from django.template import RequestContext
 from django.contrib import messages
 from django.db.models import Q
 
-import mails
+# import mails
 
 import search as s
 
