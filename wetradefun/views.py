@@ -46,7 +46,7 @@ def contact_us(request):
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             text = form.cleaned_data['text']
-            mails.send('Contacting', name, email, 'Webmaster', 'wetradefun.webmaster@gmail.com', text)
+            # mails.send('Contacting', name, email, 'Webmaster', 'wetradefun.webmaster@gmail.com', text)
             messages.add_message(request, messages.SUCCESS, 'Thanks for contacting!')
     else:
         form = ContactForm()

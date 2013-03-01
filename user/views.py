@@ -41,14 +41,14 @@ def forget(request):
             user.set_password(random_pass)
             user.save()
             messages.add_message(request, messages.SUCCESS, 'Check your email, a random password has been sent')
-            mails.send(
-              'Your new password',
-              'We Trade Fun Team', 'wetradefun.webmaster@gmail.com',
-              user.username, 
-              user.email, 
-              'Here is your new password: '+random_pass+
-              '\n\n http://wetradefun.appspot.com'
-              )
+            # mails.send(
+            #   'Your new password',
+            #   'We Trade Fun Team', 'wetradefun.webmaster@gmail.com',
+            #   user.username, 
+            #   user.email, 
+            #   'Here is your new password: '+random_pass+
+            #   '\n\n http://wetradefun.appspot.com'
+            #   )
         else:
             messages.add_message(request, messages.ERROR, 'Your form is incorrect')
     else:
